@@ -1,0 +1,218 @@
+buildscript {
+    ext {
+        junitVersion = '4.12'
+        slf4jVersion = '1.7.12'
+        aopVersion = '1.0'
+        logbackVersion = '1.1.3'
+        aopVersion = '1.0'
+        cglibVersion = '3.1'
+        paranamerVersion = '2.8'
+        assertJVersion = '3.2.0'
+        jacksonVersion = '2.6.2'
+        shiroVersion = '1.2.4'
+        httpClientVersion = '4.5.1'
+        servletApiVersion = '3.1.0'
+        jettyVersion = '9.3.4.v20151007'
+        validationApiVersion = '1.1.0.Final'
+        guavaVersion = '18.0'
+        hibernateValidatorVersion = '5.2.2.Final'
+        elApiVersion = '2.2.4'
+        elVersion = '2.2.4'
+    }
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3'
+        classpath 'net.researchgate:gradle-release:2.0.2'
+    }
+}
+
+allprojects {
+    group = 'com.github.andrewoma.restless'
+}
+
+subprojects {
+    apply plugin: 'maven'
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+//    apply from: '../publish.gradle'
+
+    repositories {
+        mavenCentral()
+    }
+
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
+
+    dependencies {
+        compile(
+                "org.slf4j:slf4j-api:$slf4jVersion",
+        )
+        testCompile(
+                "junit:junit:$junitVersion",
+                "ch.qos.logback:logback-classic:$logbackVersion",
+                "org.slf4j:log4j-over-slf4j:$slf4jVersion",
+                "org.assertj:assertj-core:$assertJVersion",
+        )
+    }
+
+    test {
+        exclude '**/Abstract*'
+    }
+}
+
+project(':core') {
+    dependencies {
+        compile(
+                project(':annotations'),
+                "com.thoughtworks.paranamer:paranamer:$paranamerVersion",
+                'javax.inject:javax.inject:1',
+                "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion",
+        )
+        testCompile(
+        )
+    }
+}
+
+project(':annotations') {
+    dependencies {
+        compile(
+        )
+        testCompile(
+        )
+    }
+}
+
+project(':server') {
+    dependencies {
+        compile(
+                project(':core'),
+        )
+        testCompile(
+        )
+    }
+}
+
+project(':client') {
+    dependencies {
+        compile(
+                project(':core'),
+        )
+        testCompile(
+        )
+    }
+}
+
+project(':client-http') {
+    dependencies {
+        compile(
+                project(':client'),
+                "org.apache.httpcomponents:httpclient:$httpClientVersion",
+        )
+        testCompile(
+        )
+    }
+}
+
+project(':server-http') {
+    dependencies {
+        compile(
+                project(':server'),
+                "javax.servlet:javax.servlet-api:$servletApiVersion",
+        )
+        testCompile(
+        )
+    }
+}
+
+project(':integration-test-http') {
+    dependencies {
+        compile(
+                project(':client-http'),
+                project(':server-http'),
+                "org.eclipse.jetty:jetty-servlet:$jettyVersion",
+                "com.google.guava:guava:$guavaVersion",
+                "ch.qos.logback:logback-access:$logbackVersion",
+        )
+        testCompile(
+        )
+    }
+}
+
+project(':example/api') {
+    dependencies {
+        compile(
+                project(':annotations'),
+                "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion",
+                "javax.inject:javax.inject:1",
+                "org.apache.shiro:shiro-core:$shiroVersion", // TODO ... only really want annotations
+                "javax.validation:validation-api:$validationApiVersion",
+                "org.hibernate:hibernate-validator:$hibernateValidatorVersion", // TODO ... only really want constraint annotations
+        )
+    }
+}
+
+project(':example/client') {
+    dependencies {
+        compile(
+                project(':example/api'),
+                project(':client-http'),
+        )
+    }
+}
+
+project(':example/server') {
+    dependencies {
+        compile(
+                project(':example/api'),
+                project(':server-http'),
+                "org.apache.shiro:shiro-core:$shiroVersion",
+                "org.hibernate:hibernate-validator:$hibernateValidatorVersion",
+                "org.eclipse.jetty:jetty-servlet:$jettyVersion",
+                "javax.el:javax.el-api:$elApiVersion",
+                "org.glassfish.web:javax.el:$elVersion",
+                "ch.qos.logback:logback-access:$logbackVersion",
+        )
+    }
+}
+
+project(':example/server') {
+    dependencies {
+        testCompile(
+                project(':example/api'),
+                project(':server-http'),
+        )
+    }
+}
+
+project(':example/integration-test') {
+    dependencies {
+        testCompile(
+                project(':example/client'),
+                project(':example/server'),
+        )
+    }
+}
+
+project(':example/readme') {
+    dependencies {
+        compile(
+                project(':server-http'),
+                project(':client-http'),
+                project(':example/readme'),
+                project(':example/server'), // TODO - remove this when ValidationInterceptor is in a module
+                "org.apache.shiro:shiro-core:$shiroVersion",
+                "org.hibernate:hibernate-validator:$hibernateValidatorVersion",
+                "org.eclipse.jetty:jetty-servlet:$jettyVersion",
+                "javax.el:javax.el-api:$elApiVersion",
+                "org.glassfish.web:javax.el:$elVersion",
+                "ch.qos.logback:logback-access:$logbackVersion",
+        )
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = "2.5"
+}
