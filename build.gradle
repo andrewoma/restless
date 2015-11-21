@@ -201,7 +201,6 @@ project(':example/readme') {
         compile(
                 project(':server-http'),
                 project(':client-http'),
-                project(':example/readme'),
                 project(':example/server'), // TODO - remove this when ValidationInterceptor is in a module
                 "org.apache.shiro:shiro-core:$shiroVersion",
                 "org.hibernate:hibernate-validator:$hibernateValidatorVersion",
