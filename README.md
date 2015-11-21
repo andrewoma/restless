@@ -12,6 +12,8 @@ be easily replaced or customised
 * Supports binary streaming of requests and responses
 * Supports streaming of POJOs (TODO)
 
+[![Build Status](https://travis-ci.org/andrewoma/restless.svg?branch=master)](https://travis-ci.org/andrewoma/restless)
+
 #### Example
 
 An RPC service is defined using plain Java interfaces and objects.
