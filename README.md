@@ -7,8 +7,7 @@ Key features:
 * Restless defines RPC interfaces in terms of standard Java interfaces and POJOs (like RMI or Spring Remoting)
 * The wire format is plain JSON exposed over HTTP, allowing easy integration via the browser, other platforms or debugging
 * Interceptors allow for generic implementations of cross-cutting concerns such as security, validation and logging
-* Customisable exception handling - a workable default mapping to common HTTP statuses is provided, but can
-be easily replaced or customised
+* Exception handling is completely customisable with a predefined set for common use cases.
 * Supports binary streaming of requests and responses
 * Supports streaming of POJOs (TODO)
 
